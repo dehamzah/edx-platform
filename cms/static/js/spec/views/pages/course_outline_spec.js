@@ -538,6 +538,7 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
 
                 beforeEach(function() {
                     setSelfPaced();
+                    window.analytics = jasmine.createSpyObj('analytics', ['track']);
                 });
 
                 createCourse = function(sectionOptions) {
@@ -691,10 +692,6 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
 
             describe('Section', function() {
                 var getDisplayNameWrapper;
-
-                beforeEach(function() {
-                    window.analytics = jasmine.createSpyObj('analytics', ['track']);
-                });
 
                 getDisplayNameWrapper = function() {
                     return getItemHeaders('section').find('.wrapper-xblock-field');
