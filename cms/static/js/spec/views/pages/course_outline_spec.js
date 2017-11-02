@@ -3,6 +3,16 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
         'js/spec_helpers/edit_helpers', 'common/js/spec_helpers/template_helpers', 'js/models/course'],
     function($, AjaxHelpers, ViewUtils, CourseOutlinePage, XBlockOutlineInfo, DateUtils,
              EditHelpers, TemplateHelpers, Course) {
+
+        function beforeEach()
+        {
+            window.analytics = jasmine.createSpyObj('analytics', ['track']);
+        }
+        function afterEach()
+        {
+            delete window.analytics
+        }
+
         describe('CourseOutlinePage', function() {
             var createCourseOutlinePage, displayNameInput, model, outlinePage, requests, getItemsOfType, getItemHeaders,
                 verifyItemsExpanded, expandItemsAndVerifyState, collapseItemsAndVerifyState, selectBasicSettings,
@@ -538,8 +548,8 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
 
                 beforeEach(function() {
                     setSelfPaced();
-                    window.analytics = jasmine.createSpyObj('analytics', ['track']);
                 });
+
 
                 createCourse = function(sectionOptions) {
                     createCourseOutlinePage(this,
@@ -656,6 +666,7 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
                 });
 
                 it('can view when no highlights exist', function() {
+                    console.log("Another Hi there!!!!!!\n");
                     createCourseWithHighlights([]);
                     openHighlights();
                     expectHighlightsToBe([]);
@@ -692,6 +703,10 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
 
             describe('Section', function() {
                 var getDisplayNameWrapper;
+
+                beforeEach(function() {
+                    setSelfPaced();
+                });
 
                 getDisplayNameWrapper = function() {
                     return getItemHeaders('section').find('.wrapper-xblock-field');
