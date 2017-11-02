@@ -538,7 +538,6 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
 
                 beforeEach(function() {
                     setSelfPaced();
-                    window.analytics = jasmine.createSpyObj('analytics', ['track']);
                 });
 
                 createCourse = function(sectionOptions) {
@@ -656,9 +655,16 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
                 });
 
                 it('can view when no highlights exist', function() {
+                    console.log('managgia: \n');
+                    console.log(window +'\n');
+                    console.log(window.analytics + '\n');
+//                     window.analytics.track = jasmine.createSpy().and.callThrough();
+//                     var mySpy = spyOn(window.analytics, 'track').and.returnValue('jae');
+                    window.analytics = jasmine.createSpyObj('analytics', ['track']);
                     createCourseWithHighlights([]);
                     openHighlights();
                     expectHighlightsToBe([]);
+//                     delete window.analytics.track;
                 });
 
                 it('can view existing highlights', function() {
