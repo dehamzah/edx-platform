@@ -8,7 +8,7 @@ import ddt
 from django.conf import settings
 
 from entitlements.models import CourseEntitlement
-from student.tests.factories import UserFactory
+from student.tests.factories import UserFactory, TEST_PASSWORD
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 from student.tests.factories import CourseEnrollmentFactory
@@ -29,8 +29,8 @@ class EntitlementDataTest(ModuleStoreTestCase):
         super(EntitlementDataTest, self).setUp()
         self.course = CourseFactory.create()
         self.course_uuid = uuid.uuid4()
-        self.user = UserFactory.create(username=self.USERNAME, email=self.EMAIL, password=self.PASSWORD)
-        self.client.login(username=self.USERNAME, password=self.PASSWORD)
+        self.user = UserFactory()
+        self.client.login(username=self.user.username, password=TEST_PASSWORD)
 
     def _add_entitlement_for_user(self, user, parent_uuid):
         entitlement_data = {

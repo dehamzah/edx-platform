@@ -1,16 +1,15 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import CourseEntitlement
 
 
 class CourseEntitlementSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    user = serializers.SlugRelatedField(slug_field='username', queryset=get_user_model().objects.all())
 
     class Meta:
         model = CourseEntitlement
         fields = (
-            'id',
             'user',
             'uuid',
             'course_uuid',

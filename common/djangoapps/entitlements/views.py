@@ -1,25 +1,23 @@
-import uuid
-from datetime import datetime
+import logging
+
+from django.utils import timezone
 
 from django_filters.rest_framework import DjangoFilterBackend
 from edx_rest_framework_extensions.authentication import JwtAuthentication
-from rest_framework import permissions, status
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.response import Response
 
 from student.models import CourseEnrollment
 from .filters import CourseEntitlementFilter
 from .models import CourseEntitlement
 from .serializers import CourseEntitlementSerializer
 
-SESSION_CLASSES = (JwtAuthentication, SessionAuthentication)
-PERMISSION_CLASSES = (permissions.IsAuthenticated, permissions.IsAdminUser)
+log = logging.getLogger("edx.entitlement")
 
 
 class EntitlementViewSet(viewsets.ModelViewSet):
-    authentication_classes = SESSION_CLASSES
-    permission_classes = PERMISSION_CLASSES
+    authentication_classes = (JwtAuthentication, SessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
     queryset = CourseEntitlement.objects.all()
     lookup_value_regex = '[0-9a-f-]+'
     lookup_field = 'uuid'
@@ -29,18 +27,24 @@ class EntitlementViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         """
-        Expire and revoke the provided Entitlements UUID and unenroll the User if enrolled
+        This method is an override and is called by the DELETE method
         """
+        save_model = False
         if instance.expired_at is None:
-            instance.expired_at = datetime.now()
-            instance.save()
+            instance.expired_at = timezone.now()
+            log.info('Set expired_at to [%s] for course entitlement [%s]', instance.expired_at, instance.uuid)
+            save_model = True
 
-        # if the entitlement is enrolled we need to unenroll the user
         if instance.enrollment_course_run is not None:
             CourseEnrollment.unenroll(
                 user=instance.user,
                 course_id=instance.enrollment_course_run.course_id,
                 skip_refund=True
             )
+            enrollment = instance.enrollment_course_run
             instance.enrollment_course_run = None
+            save_model = True
+            log.info('User unenrolled from Course run [%s]', enrollment.course_id)
+
+        if save_model:
             instance.save()
