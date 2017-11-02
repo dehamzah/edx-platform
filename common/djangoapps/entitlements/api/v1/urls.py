@@ -7,6 +7,6 @@ router = DefaultRouter()
 router.register(r'entitlements', EntitlementViewSet, base_name='entitlements')
 
 urlpatterns = patterns(
-    'entitlements.views',
+    '',
     url(r'', include(router.urls)),
 )

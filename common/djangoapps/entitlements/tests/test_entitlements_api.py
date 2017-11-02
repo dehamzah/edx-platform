@@ -1,6 +1,5 @@
 import json
 import unittest
-import pytest
 import uuid
 
 from django.conf import settings
@@ -10,7 +9,6 @@ from xmodule.modulestore.tests.factories import CourseFactory
 
 from entitlements.tests.factories import CourseEntitlementFactory
 from entitlements.models import CourseEntitlement
-from openedx.core.lib.token_utils import JwtBuilder
 from student.tests.factories import CourseEnrollmentFactory, UserFactory, TEST_PASSWORD
 
 
@@ -29,7 +27,7 @@ class EntitlementsTest(ModuleStoreTestCase):
         self.client.login(username=self.user.username, password=TEST_PASSWORD)
         self.course = CourseFactory.create(org='TestX', course='TS101', run='T1')
         # self.entitlements_url = '/api/entitlements/v1/entitlements/'
-        self.entitlements_url = reverse('entitlements_api:api:entitlements-list')
+        self.entitlements_url = reverse('entitlements_api:entitlements-list')
         self.entitlements_uuid_path = 'entitlements_api:api:entitlements-list'
         self.course_uuid = str(uuid.uuid4())
 
@@ -109,8 +107,7 @@ class EntitlementsTest(ModuleStoreTestCase):
 
         uuid1 = CourseEntitlementFactory.create(user=self.user, order_number='TESTX-1001').uuid
         CourseEntitlementFactory.create(user=self.user, order_number='TESTX-1002')
-        url = '{}{}/'.format(self.entitlements_url, str(uuid1))
-        # url = reverse(self.entitlements_uuid_path, args=[str(uuid1)])
+        url = reverse('entitlements_api:entitlements-detail', args=[str(uuid1)])
 
         response = self.client.get(
             url,
@@ -123,8 +120,7 @@ class EntitlementsTest(ModuleStoreTestCase):
 
     def test_delete_and_revoke_entitlement(self):
         uuid1 = CourseEntitlementFactory.create(user=self.user, order_number='TESTX-1001').uuid
-
-        url = '{}{}/'.format(self.entitlements_url, str(uuid1))
+        url = reverse('entitlements_api:entitlements-detail', args=[str(uuid1)])
 
         response = self.client.delete(
             url,
@@ -140,8 +136,7 @@ class EntitlementsTest(ModuleStoreTestCase):
 
     def test_revoke_unenroll_entitlement(self):
         uuid1 = CourseEntitlementFactory.create(user=self.user, order_number='TESTX-1001').uuid
-
-        url = '{}{}/'.format(self.entitlements_url, str(uuid1))
+        url = reverse('entitlements_api:entitlements-detail', args=[str(uuid1)])
 
         enrollment = CourseEnrollmentFactory.create(user=self.user, course_id=self.course.id)
 

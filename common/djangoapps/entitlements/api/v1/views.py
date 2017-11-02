@@ -8,9 +8,9 @@ from rest_framework import permissions, viewsets
 from rest_framework.authentication import SessionAuthentication
 
 from student.models import CourseEnrollment
-from .filters import CourseEntitlementFilter
-from .models import CourseEntitlement
-from .serializers import CourseEntitlementSerializer
+from entitlements.filters import CourseEntitlementFilter
+from entitlements.models import CourseEntitlement
+from entitlements.serializers import CourseEntitlementSerializer
 
 log = logging.getLogger("edx.entitlement")
 

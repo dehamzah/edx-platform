@@ -1,11 +1,8 @@
 import uuid as uuid_tools
 
-from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
 from model_utils.models import TimeStampedModel
-
-from course_modes.models import CourseMode
 
 
 class CourseEntitlement(TimeStampedModel):
