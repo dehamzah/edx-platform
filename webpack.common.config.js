@@ -19,6 +19,7 @@ module.exports = {
         // Studio
         AssetsPage: './node_modules/@edx/studio-frontend/src/index.jsx',
         Import: './cms/static/js/features/import/factories/import.js',
+        WikiAlert: './lms/static/js/wiki/WikiAlertStatus.jsx',
         StudioIndex: './cms/static/js/features_jsx/studio/index.jsx',
 
         // LMS: single support form

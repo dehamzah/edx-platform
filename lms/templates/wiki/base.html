@@ -56,6 +56,9 @@
   {% endwith %}
   {% endif %}
 
+{% load render_bundle from webpack_loader %}
+{% render_bundle "WikiAlert" %}
+
 <div class="container">
   <div class="wiki-wrapper">
     <main id="main" aria-label="Content" tabindex="-1">
