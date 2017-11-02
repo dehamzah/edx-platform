@@ -235,7 +235,7 @@ class TestUserPreferenceMiddleware(TestCase):
         # The 'email_marketing' app is installed in the LMS env but not the CMS env. It listens for the
         # USER_FIELD_CHANGED signal (utils.model_utils) and does a query to check the EmailMarketingConfiguration
         # table to see if Sailthru integreation is enabled.
-        expected_queries = 6 if 'email_marketing' in settings.INSTALLED_APPS else 5
+        expected_queries = 6 if 'email_marketing.apps.EmailMarketingConfig' in settings.INSTALLED_APPS else 5
         with self.assertNumQueries(expected_queries):
             self.middleware.process_request(self.request)
 
@@ -265,7 +265,7 @@ class TestUserPreferenceMiddleware(TestCase):
         # The 'email_marketing' app is installed in the LMS env but not the CMS env. It listens for the
         # USER_FIELD_CHANGED signal (utils.model_utils) and does a query to check the EmailMarketingConfiguration
         # table to see if Sailthru integreation is enabled.
-        expected_queries = 6 if 'email_marketing' in settings.INSTALLED_APPS else 5
+        expected_queries = 6 if 'email_marketing.apps.EmailMarketingConfig' in settings.INSTALLED_APPS else 5
         with self.assertNumQueries(expected_queries):
             self.middleware.process_request(self.request)
 
