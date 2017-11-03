@@ -11,6 +11,7 @@ from path import Path as path
 import pytz
 from django.http import Http404
 from django.conf import settings
+from django.db import connection
 
 from edxmako.shortcuts import render_to_string
 from xmodule.modulestore import ModuleStoreEnum
@@ -32,6 +33,8 @@ from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module
 from lms.djangoapps.courseware.courseware_access_exception import CoursewareAccessException
 from student.models import CourseEnrollment
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from django.db.models import Count
 import branding
 
 from opaque_keys.edx.keys import UsageKey
@@ -424,6 +427,35 @@ def sort_by_start_date(courses):
     )
 
     return courses
+
+
+def sort_by_newest(courses):
+    """
+    Returns a list of courses sorted by their created date, latest first.
+    """
+    courses = sorted(
+        courses,
+        key=lambda course: course.created,
+        reverse=True   
+    )
+
+    return courses
+
+
+def sort_by_popular(courses):
+    """
+    Returns a list of courses sorted by their total course enrollment.
+    """
+    rows = []
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT coc.display_number_with_default as number, COUNT(sc.course_id) as 'Total Registrants' FROM `student_courseenrollment` sc INNER JOIN `course_overviews_courseoverview` coc ON sc.course_id = coc.id GROUP BY coc.display_number_with_default ORDER BY COUNT(sc.course_id) DESC")
+        rows = cursor.fetchall()
+    for index,course in enumerate(courses):
+        for row in rows:
+            if row[0] != course.display_number_with_default:
+                continue
+            courses[index].enrolls = row[1]
+    return sorted(courses, key=lambda course: course.enrolls, reverse=True)
 
 
 def get_cms_course_link(course, page='course'):

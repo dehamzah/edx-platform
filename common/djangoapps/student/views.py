@@ -73,7 +73,7 @@ from opaque_keys.edx.locator import CourseLocator
 
 from collections import namedtuple
 
-from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
+from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date, sort_by_newest, sort_by_popular  # pylint: disable=import-error
 from courseware.access import has_access
 
 from django_comment_common.models import Role
@@ -164,15 +164,21 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     courses = get_courses(user)
 
-    if configuration_helpers.get_value(
-            "ENABLE_COURSE_SORTING_BY_START_DATE",
-            settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
-    ):
-        courses = sort_by_start_date(courses)
-    else:
-        courses = sort_by_announcement(courses)
+    # if configuration_helpers.get_value(
+    #         "ENABLE_COURSE_SORTING_BY_START_DATE",
+    #         settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
+    # ):
+    #     courses = sort_by_start_date(courses)
+    # else:
+    #     courses = sort_by_announcement(courses)
 
-    context = {'courses': courses}
+    courses = sort_by_newest(courses)
+    courses_popular = sort_by_popular(courses)
+
+    context = {
+        'courses': courses,
+        'courses_popular': courses_popular
+    }
 
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
